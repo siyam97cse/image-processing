@@ -1,0 +1,38 @@
+import cv2
+import numpy as np
+
+# Load two images of the same size
+image1_path = input("Enter the path of the first image: ")
+image2_path = input("Enter the path of the second image: ")
+
+image1 = cv2.imread(image1_path)
+image2 = cv2.imread(image2_path)
+
+# Check if both images were loaded successfully
+if image1 is None or image2 is None:
+    print("Error loading images. Please check the paths.")
+else:
+    # Resize images to the same dimensions if necessary
+    if image1.shape != image2.shape:
+        image2 = cv2.resize(image2, (image1.shape[1], image1.shape[0]))
+
+    # Addition of two images
+    added_image = cv2.add(image1, image2)
+
+    # Subtraction of two images
+    subtracted_image = cv2.subtract(image1, image2)
+
+    # Multiplication of an image by a scalar
+    scalar = 1.5  # Adjust this scalar value as needed
+    multiplied_image = cv2.convertScaleAbs(image1, alpha=scalar)
+
+    # Display results
+    cv2.imshow("Original Image 1", image1)
+    cv2.imshow("Original Image 2", image2)
+    cv2.imshow("Added Image", added_image)
+    cv2.imshow("Subtracted Image", subtracted_image)
+    cv2.imshow("Multiplied Image (by Scalar)", multiplied_image)
+
+    # Wait for a key press and close windows
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

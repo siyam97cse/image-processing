@@ -1,0 +1,53 @@
+import cv2
+import numpy as np
+
+def adjust_brightness(image, brightness=0):
+    """Adjust brightness. Positive values increase brightness, negative values decrease it."""
+    return cv2.convertScaleAbs(image, beta=brightness)
+
+def adjust_contrast(image, contrast=1.0):
+    """Adjust contrast. Values > 1.0 increase contrast, values between 0 and 1.0 decrease it."""
+    return cv2.convertScaleAbs(image, alpha=contrast)
+
+def add_shadow(image, shadow_strength=50):
+    """Add shadow by darkening the image."""
+    shadow = np.zeros(image.shape, dtype=image.dtype)
+    return cv2.addWeighted(image, 1, shadow, 0, -shadow_strength)
+
+def apply_monochrome(image, color=(0, 128, 255)):
+    """Apply monochrome effect using a single color tone."""
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    colored_image = cv2.merge((gray_image, gray_image, gray_image))
+    monochrome_image = cv2.addWeighted(colored_image, 0.5, np.full_like(colored_image, color), 0.5, 0)
+    return monochrome_image
+
+# Load an image
+image_path = input("Enter the path of the image: ")
+image = cv2.imread(image_path)
+
+# Check if the image was loaded successfully
+if image is None:
+    print("Error loading image. Please check the path.")
+else:
+    # Adjust parameters here
+    brightness_value = 50      # Adjust brightness (+/-)
+    contrast_value = 1.2       # Adjust contrast (>1.0 to increase, 0-1.0 to decrease)
+    shadow_strength = 50       # Strength of shadow effect
+    monochrome_color = (0, 128, 255)  # Color for monochrome effect in BGR (e.g., blueish tone)
+
+    # Apply adjustments
+    bright_image = adjust_brightness(image, brightness=brightness_value)
+    contrast_image = adjust_contrast(image, contrast=contrast_value)
+    shadow_image = add_shadow(image, shadow_strength=shadow_strength)
+    monochrome_image = apply_monochrome(image, color=monochrome_color)
+
+    # Display results
+    cv2.imshow("Original Image", image)
+    cv2.imshow("Brightness Adjusted", bright_image)
+    cv2.imshow("Contrast Adjusted", contrast_image)
+    cv2.imshow("Shadow Added", shadow_image)
+    cv2.imshow("Monochrome Color Applied", monochrome_image)
+
+    # Wait for a key press and close windows
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

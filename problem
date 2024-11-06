@@ -1,0 +1,306 @@
+Neg to pos
+
+import cv2
+import matplotlib.pyplot as plt
+
+path = input("enter the path")
+print(path)
+
+img = cv2.imread(path)
+
+
+img2 = 255 - img
+plt.imshow(img2)
+
+img2_rgb = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)  # Use cv2.COLOR_BGR2RGB instead of cv2.Color_BGR2RGB
+plt.imshow(img2_rgb)
+
+
+problem 2(Write a python code to Brightness, Contrast, Shadow, monochrome color  in an image. )
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the image in grayscale
+image_path = input("Enter the path of the image: ")
+grayscale_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+# Adjust Brightness and Contrast
+def adjust_brightness_contrast(img, brightness=0, contrast=0):
+    return cv2.convertScaleAbs(img, alpha=1 + contrast / 100.0, beta=brightness)
+
+# Parameters for brightness and contrast adjustment
+brightness_value = 50  # Increase for brightness
+contrast_value = 30    # Increase for contrast
+
+# Apply brightness and contrast adjustment
+adjusted_image = adjust_brightness_contrast(grayscale_image, brightness_value, contrast_value)
+
+# Shadow Adjustment (Simple linear scaling)
+shadow_adjusted = cv2.convertScaleAbs(grayscale_image, alpha=0.5, beta=0)  # reduce alpha for shadow effect
+
+# Monochrome (binary) effect
+_, monochrome_image = cv2.threshold(grayscale_image, 128, 255, cv2.THRESH_BINARY)
+
+# Display the images using matplotlib
+plt.figure(figsize=(10, 5))
+
+
+
+# Brightness & Contrast Adjusted Image
+plt.subplot(1, 3, 1)
+plt.imshow(adjusted_image, cmap='gray')
+plt.title("Brightness & Contrast")
+plt.axis('off')
+
+# Shadow Adjusted Image
+plt.subplot(1, 3, 2)
+plt.imshow(shadow_adjusted, cmap='gray')
+plt.title("Shadow Adjusted")
+plt.axis('on')
+
+# Monochrome Image
+plt.subplot(1, 3, 3)
+plt.imshow(monochrome_image, cmap='gray')
+plt.title("Monochrome")
+plt.axis('off')
+
+plt.show()
+
+
+problem 3(Write a python code to perform Gamma and and Log.)
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Get image path from user input
+image_path = input("Enter the path of the grayscale image: ")
+
+# Load the grayscale image
+grayscale_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+# Check if the image loaded successfully
+
+gamma = 2.0  # Change this for different gamma values
+gamma_corrected = np.array(255 * (grayscale_image / 255) ** gamma, dtype='uint8')
+
+    # Log Transformation
+log_transformed = np.array(255 * (np.log1p(grayscale_image) / np.log(256)), dtype='uint8')
+
+# Display the original and processed images using matplotlib
+plt.figure(figsize=(15, 5))
+
+    # Original Grayscale Image
+plt.subplot(1, 3, 1)
+plt.imshow(grayscale_image, cmap='gray')
+plt.title("Original Grayscale Image")
+plt.axis('off')
+
+    # Gamma Corrected Image
+plt.subplot(1, 3, 2)
+plt.imshow(gamma_corrected, cmap='gray')
+plt.title(f"Gamma Corrected (γ={gamma})")
+plt.axis('off')
+
+    # Log Transformed Image
+plt.subplot(1, 3, 3)
+plt.imshow(log_transformed, cmap='gray')
+plt.title("Log Transformed Image")
+plt.axis('off')
+
+    # Show the plots
+plt.show()
+
+
+addition/sub/mul
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Get image path from user input
+image_path = input("Enter the path of the grayscale image: ")
+
+# Load the grayscale image
+grayscale_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+# Check if the image loaded successfully
+if grayscale_image is None:
+    print("Error loading image. Please check the path.")
+else:
+    # Define a constant for operations
+    constant = 50
+
+    # Addition
+    added_image = cv2.add(grayscale_image, constant)
+
+    # Subtraction
+    subtracted_image = cv2.subtract(grayscale_image, constant)
+
+    # Multiplication
+    multiplied_image = cv2.multiply(grayscale_image, 1.5)  # Scale by 1.5 for multiplication
+
+    # Display the original and processed images using matplotlib
+    plt.figure(figsize=(15, 5))
+
+    # Original Grayscale Image
+    plt.subplot(1, 4, 1)
+    plt.imshow(grayscale_image, cmap='gray')
+    plt.title("Original Image")
+    plt.axis('off')
+
+    # Added Image
+    plt.subplot(1, 4, 2)
+    plt.imshow(added_image, cmap='gray')
+    plt.title(f"Addition (+{constant})")
+    plt.axis('off')
+
+    # Subtracted Image
+    plt.subplot(1, 4, 3)
+    plt.imshow(subtracted_image, cmap='gray')
+    plt.title(f"Subtraction (-{constant})")
+    plt.axis('off')
+
+    # Multiplied Image
+    plt.subplot(1, 4, 4)
+    plt.imshow(multiplied_image, cmap='gray')
+    plt.title("Multiplication (×1.5)")
+    plt.axis('off')
+
+    # Show the plots
+    plt.show()
+
+
+cumalitive histogram(Write a python code to perform Cumulative function with a constant value. )
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Get image path from user input
+image_path = input("Enter the path of the grayscale image: ")
+
+# Load the grayscale image
+grayscale_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+# Check if the image loaded successfully
+if grayscale_image is None:
+    print("Error loading image. Please check the path.")
+else:
+    # Calculate histogram
+    histogram, bins = np.histogram(grayscale_image.flatten(), 256, [0, 256])
+
+    # Calculate cumulative distribution function (CDF)
+    cdf = histogram.cumsum()
+
+    # Normalize the CDF
+    cdf_normalized = cdf * histogram.max() / cdf.max()
+
+    # Apply the CDF to the original image
+    cdf_mapped = np.interp(grayscale_image.flatten(), bins[:-1], cdf_normalized)
+    cumulative_image = cdf_mapped.reshape(grayscale_image.shape).astype('uint8')
+
+    # Display the original and processed images using matplotlib
+    plt.figure(figsize=(15, 5))
+
+    # Original Grayscale Image
+    plt.subplot(1, 3, 1)
+    plt.imshow(grayscale_image, cmap='gray')
+    plt.title("Original Image")
+    plt.axis('off')
+
+    # CDF Normalized Image
+    plt.subplot(1, 3, 2)
+    plt.imshow(cumulative_image, cmap='rgb')
+    plt.title("Cumulative Function Image")
+    plt.axis('off')
+
+    # Histogram of the original and cumulative image
+    plt.subplot(1, 3, 3)
+    plt.hist(grayscale_image.flatten(), bins=256, color='blue', alpha=0.5, label='Original Histogram')
+    plt.hist(cumulative_image.flatten(), bins=256, color='red', alpha=0.5, label='Cumulative Histogram')
+    plt.title("Histograms")
+    plt.legend()
+    plt.xlim([0, 256])
+
+    # Show the plots
+    plt.show()
+
+
+Write a python code to perform Equalize Adapthist in an Grayscale image
+
+import cv2
+import matplotlib.pyplot as plt
+
+# Get image path from user input
+image_path = input("Enter the path of the grayscale image: ")
+
+# Load the grayscale image
+grayscale_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+# Check if the image loaded successfully
+if grayscale_image is None:
+    print("Error loading image. Please check the path.")
+else:
+    # Create a CLAHE object (Arguments are optional)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+
+    # Apply CLAHE to the grayscale image
+    clahe_image = clahe.apply(grayscale_image)
+
+    # Display the original and CLAHE-enhanced images using matplotlib
+    plt.figure(figsize=(10, 5))
+
+    # Original Grayscale Image
+    plt.subplot(1, 2, 1)
+    plt.imshow(grayscale_image, cmap='gray')
+    plt.title("Original Grayscale Image")
+    plt.axis('off')
+
+    # CLAHE Enhanced Image
+    plt.subplot(1, 2, 2)
+    plt.imshow(clahe_image, cmap='gray')
+    plt.title("CLAHE Enhanced Image")
+    plt.axis('off')
+
+    # Show the plots
+    plt.show()
+
+
+problem no 1
+
+import cv2
+import matplotlib.pyplot as plt
+
+# Get the image path from user input
+image_path = input("Enter the path of the grayscale image: ")
+
+# Load the grayscale image
+grayscale_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+# Check if the image loaded successfully
+if grayscale_image is None:
+    print("Error loading image. Please check the path.")
+else:
+    # Convert Grayscale to RGB
+    rgb_image = cv2.cvtColor(grayscale_image, cv2.COLOR_GRAY2RGB)
+
+    # Display the images using matplotlib
+    plt.figure(figsize=(10, 5))
+
+    # Original Grayscale Image
+    plt.subplot(1, 2, 1)
+    plt.imshow(grayscale_image, cmap='gray')
+    plt.title("Original Grayscale Image")
+    plt.axis('off')
+
+    # Converted RGB Image
+    plt.subplot(1, 2, 2)
+    plt.imshow(rgb_image)
+    plt.title("Converted RGB Image")
+    plt.axis('off')
+
+    # Show the plots
+    plt.show()
